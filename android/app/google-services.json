@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "630965239135",
+    "project_id": "videofam-c0f70",
+    "storage_bucket": "videofam-c0f70.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:630965239135:android:3c727d3b85796c4df48aea",
+        "android_client_info": {
+          "package_name": "com.example.videofam"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "630965239135-qtekgkfhk1neu6lees8t2di0iosrso67.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_sJyAmTsylq5-wBsPp73Z6uKtYLJ1waE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "630965239135-qtekgkfhk1neu6lees8t2di0iosrso67.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
