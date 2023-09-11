@@ -12,28 +12,27 @@ class VideoCards extends StatefulWidget {
 
 class _VideoCardsState extends State<VideoCards> {
   late VideoPlayerController _videoController;
-
   @override
   void initState() {
     super.initState();
-    _initializeVideoController();
+    // _initializeVideoController();
   }
 
-  Future<void> _initializeVideoController() async {
-    _videoController = VideoPlayerController.network(widget.snap['videoUrl']);
-    await _videoController.initialize();
-    Future.delayed(Duration(seconds: 1), () {
-          setState(() {
-            _videoController.play();
-          });
-        }); // Mute the video
-  }
+  // Future<void> _initializeVideoController() async {
+  //   _videoController = VideoPlayerController.network(widget.snap['videoUrl']);
+  //   await _videoController.initialize();
+  //   Future.delayed(Duration(seconds: 1), () {
+  //         setState(() {
+  //           _videoController.play();
+  //         });
+  //       }); // Mute the video
+  // }
 
   @override
-  void dispose() {
-    _videoController.dispose();
-    super.dispose();
-  }
+  // void dispose() {
+  //   _videoController.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +41,7 @@ class _VideoCardsState extends State<VideoCards> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: Colors.grey.shade400, width: 0.5),
+        color: Colors.grey,
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -53,10 +53,15 @@ class _VideoCardsState extends State<VideoCards> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  backgroundColor: Colors.grey.shade100,
-                  radius: 24,
-                ),
+               CircleAvatar(
+                    backgroundColor: widget.snap['profileImageUrl'] != null
+                        ? Colors.transparent
+                        : Colors.grey.shade100,
+                    radius: 24,
+                    backgroundImage: widget.snap['profileImageUrl'] != null
+                        ? NetworkImage(widget.snap['profileImageUrl'])
+                        : null,
+                  ),
                 SizedBox(
                   width: 8,
                 ),
@@ -75,25 +80,25 @@ class _VideoCardsState extends State<VideoCards> {
                 )
               ],
             ),
-            Text(
-              "${widget.snap['category']}",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                overflow: TextOverflow.ellipsis,
-                color: Colors.black54,
-                letterSpacing: 0.5,
-              ),
-              maxLines: 1,
-            ),
+            // Text(
+            //   "${widget.snap['category']}",
+            //   style: TextStyle(
+            //     fontSize: 16,
+            //     fontWeight: FontWeight.w400,
+            //     overflow: TextOverflow.ellipsis,
+            //     color: Colors.black54,
+            //     letterSpacing: 0.5,
+            //   ),
+            //   maxLines: 1,
+            // ),
             SizedBox(height: 8),
             Container(
               height: 240,
               child: Stack(
                 alignment: Alignment.bottomCenter,
                 children: [
-                  if (_videoController.value.isInitialized)
-                    VideoPlayer(_videoController),
+                  // if (_videoController.value.isInitialized)
+                  //   VideoPlayer(_videoController),
                 ],
               ),
             ),

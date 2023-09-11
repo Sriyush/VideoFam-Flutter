@@ -24,7 +24,7 @@ class VideoPlayerScreen extends StatefulWidget {
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   TextEditingController _searchController = TextEditingController();
-   Widget currentscreen =HomeScreen();
+  //  Widget currentscreen =HomeScreen();
   int currenttab =0;
   late VideoPlayerController _controller;
   List<String> comments = [];
@@ -53,57 +53,68 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: Text("Video Player"),
-        backgroundColor: Colors.black87,
+        title: Text(widget.videotitle,
+        style: TextStyle(
+          fontFamily: 'lexend',
+          color: Colors.black54,
+
+        ),
+        ),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
          actions: [
             IconButton(
           onPressed: () {},
           icon: const Icon(
             Icons.notifications,
-            color: Colors.white,
+            color: Colors.black54,
           ),
         ),
          ],
+          iconTheme: IconThemeData(
+            color: Colors.black54, // Set the color of the back button
+          ),
       ),
       body: Column(
         children: [
-          Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 1),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 1,
-                      blurRadius: 5,
-                      offset: Offset(0, 3), // changes position of shadow
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _searchController,
-                        onChanged: (value) {
-                          setState(() {});
-                        },
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Search videos...',
-                          hintStyle: TextStyle(
-                            fontSize: 16,
-                            // color: Colors.grey,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Icon(Icons.search, color: Colors.grey),
-                  ],
-                ),
-              ),
+          // Container(
+          //       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 1),
+          //       decoration: BoxDecoration(
+          //         color: Colors.white,
+          //         borderRadius: BorderRadius.circular(10),
+          //         boxShadow: [
+          //           BoxShadow(
+          //             color: Colors.grey.withOpacity(0.5),
+          //             spreadRadius: 1,
+          //             blurRadius: 5,
+          //             offset: Offset(0, 3), // changes position of shadow
+          //           ),
+          //         ],
+          //       ),
+          //       child: Row(
+          //         children: [
+          //           Expanded(
+          //             child: TextField(
+          //               controller: _searchController,
+          //               onChanged: (value) {
+          //                 setState(() {});
+          //               },
+          //               decoration: InputDecoration(
+          //                 border: InputBorder.none,
+          //                 hintText: 'Search videos...',
+          //                 hintStyle: TextStyle(
+          //                   fontSize: 16,
+          //                   // color: Colors.grey,
+          //                 ),
+          //               ),
+          //             ),
+          //           ),
+          //           Icon(Icons.search, color: Colors.grey),
+          //         ],
+          //       ),
+          //     ),
           GestureDetector(
             onTap: () {
               setState(() {
@@ -255,7 +266,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     minWidth: 20, 
                     onPressed: () {
                       setState(() {
-                        currentscreen=HomeScreen();
+                        // currentscreen=HomeScreen();
                         currenttab=0;
                       });
                   },

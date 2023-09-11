@@ -25,16 +25,20 @@ class FireStoreMethods {
     required String location,
     required String category,
     required String url,
+    required String? profileImageUrl,
+    required String? userPhoneNumber,
   }) async {
     DateTime time = DateTime.now();
     String timestamp = time.millisecondsSinceEpoch.toString();
     Map<String,dynamic> data = {
-      "postId": timestamp,  // Updating Document Reference
-      "title": title,  // Updating Document Reference
-      "des": des,  // Updating Document Reference
-      "location": location,  // Updating Document Reference
-      "videoUrl": url, // Updating Document Reference
-      'category': category, // Updating Document Reference
+      "postId": timestamp,
+      "title": title,
+      "des": des,
+      "location": location,
+      "videoUrl": url,
+      'category': category,
+      "profileImageUrl": profileImageUrl,
+      "userPhoneNumber": userPhoneNumber,
     };
     await firebaseFirestore.collection("posts").doc("$timestamp").set(data);
   }

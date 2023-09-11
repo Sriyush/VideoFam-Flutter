@@ -5,7 +5,8 @@ import 'package:videofam/main.dart';
 import 'package:videofam/screens/recvid.dart';
 class Otpver extends StatefulWidget {
   final String verificationId;
-  const Otpver({required this.verificationId, Key? key}) : super(key: key);
+  final String phoneNumber;
+  const Otpver({required this.verificationId, required this.phoneNumber});
 
   @override
   State<Otpver> createState() => _OtpverState();
@@ -29,11 +30,9 @@ class _OtpverState extends State<Otpver> {
   void _verifyOTP(String otp) async {
   try {
     await _auth.signInWithCredential(PhoneAuthProvider.credential(
-      verificationId: widget.verificationId, // Use the actual verification ID
+      verificationId: widget.verificationId,
       smsCode: otp,
     ));
-
-    // OTP verification successful, navigate to the next screen
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -41,7 +40,6 @@ class _OtpverState extends State<Otpver> {
       ),
     );
   } catch (e) {
-    // Handle OTP verification failure
     print("OTP verification failed: $e");
   }
 }
@@ -70,7 +68,7 @@ final submittedPinTheme = defaultPinTheme.copyWith(
 );
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.blue),
+        iconTheme: IconThemeData(color: Colors.black),
         backgroundColor: Color(0xFFF7F6F0),
         elevation: 0.0,
         centerTitle: true,
@@ -112,13 +110,13 @@ final submittedPinTheme = defaultPinTheme.copyWith(
               Center(
                 child: Text(
                   otpSent
-                      ? 'We have sent a verification code to'
+                      ? 'We have sent a verification code'
                       : 'OTP ReSent- pls check',
                   style: TextStyle(
                     fontFamily: 'lexend',
                     fontSize: 20,
                     fontWeight: FontWeight.w400,
-                    color: Color(0xFF545454),
+                    color: Colors.black  ,
                   ),
                 ),
               ),
@@ -144,7 +142,7 @@ final submittedPinTheme = defaultPinTheme.copyWith(
                   width: 200,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: Colors.black87,
+                    color: Colors.black,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Center(
@@ -199,7 +197,7 @@ final submittedPinTheme = defaultPinTheme.copyWith(
                             fontWeight: FontWeight.w400,
                             height: 1.5,
                             letterSpacing: 0.5,
-                            color: Colors.grey.shade900,
+                            color: Colors.pink.shade500,
                           ),
                         ),
                       ),

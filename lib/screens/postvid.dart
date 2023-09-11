@@ -1,6 +1,9 @@
 import 'dart:io';
 
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
@@ -9,7 +12,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:permission_handler/permission_handler.dart';
-import '../utils/firestore.dart';
+import '../firebase/firestore.dart';
 
 
 
@@ -27,29 +30,62 @@ class _PostVideoScreenState extends State<PostVideoScreen> {
   bool _isLoading = false;
   XFile? pickedFile = null;
   String  downloadURL = "";
-
+  String? profileImageUrl;
+  String userPhoneNumber = '';
   TextEditingController _locationController = TextEditingController();
   TextEditingController _titleController = TextEditingController();
   TextEditingController _descController = TextEditingController();
   TextEditingController _categoryController = TextEditingController();
-
+  late DatabaseReference info1;
 
   VideoPlayerController? _videoController;
   final ImagePicker _imagePicker = ImagePicker();
 
   Future<void> _pickVideoFromCamera() async {
      pickedFile = await _imagePicker.pickVideo(source: ImageSource.camera);
-
      if (pickedFile != null) {
+     String? fetchedProfileImageUrl = await fetchProfileImageUrl(userPhoneNumber);
        setState(() {
          _videoController = VideoPlayerController.file(File(pickedFile!.path))
            ..initialize().then((_) {
              // Ensure that the video starts playing once it's initialized
              _videoController!.play();
            });
+           profileImageUrl = fetchedProfileImageUrl;
        });
+       
      }
   }
+  void showSuccessSnackBar(BuildContext context) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('Your video has been successfully posted.'),
+      duration: Duration(seconds: 2),
+    ),
+  );
+}
+
+  
+ Future<String?> fetchProfileImageUrl(String userPhoneNumber) async {
+  if (userPhoneNumber != null) {
+    info1.once().then((DatabaseEvent event) {
+      final data = event.snapshot.value;
+      print('Data from Firebase: $data');
+      if (data is Map) {
+        setState(() {
+          profileImageUrl = data['profileImageUrl'] ?? '';
+        });
+      } else {
+        print('User profile data not found in the database for userPhoneNumber: $userPhoneNumber');
+      }
+    }).catchError((error) {
+      print('Error loading user profile: $error');
+    });
+  } else {
+  }
+}
+
+
 
   @override
   void dispose() {
@@ -93,6 +129,21 @@ class _PostVideoScreenState extends State<PostVideoScreen> {
     super.initState();
     _checkLocationPermission();
     _getCurrentLocation();
+    final user = FirebaseAuth.instance.currentUser;
+if (user != null) {
+  final phoneNumber = user.phoneNumber;
+  if (phoneNumber != null) {
+    userPhoneNumber = phoneNumber;
+    print('$userPhoneNumber');
+    info1 = FirebaseDatabase.instance.ref().child('userProfiles').child('$userPhoneNumber');
+    fetchProfileImageUrl(userPhoneNumber);
+  } else {
+    print('User does not have a linked phone number.');
+  }
+} else {
+  print('User is not authenticated.');
+}
+
   }
   void showSnackBar(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -132,7 +183,7 @@ Future<void> _getCurrentCity(double latitude, double longitude) async {
       setState(() {
         _currentCity = placemarks[0].locality;
         _locationController.text =
-            "$_currentCity  ${_currentPosition!.latitude} ${_currentPosition!.longitude}";
+            "$_currentCity";
         _isLocation = false;
       });
     }
@@ -171,15 +222,17 @@ void showLocationPrompt() {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.white70,
         appBar: AppBar(
           title: Text(
             "Post Video",
             style: TextStyle(
               fontSize: 16,
+              color: Colors.black54
             ),
           ),
-          backgroundColor: Colors.black87,
+          elevation: 0,
+          backgroundColor: Colors.transparent,
           actions:  [
             GestureDetector(
               onTap: _pickVideoFromCamera,
@@ -187,17 +240,23 @@ void showLocationPrompt() {
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: Icon(
                   Icons.video_call_rounded,
-                  color: Colors.white,
+                  color: Colors.black54,
                 ),
               ),
             )
           ],
+          leading: IconButton(
+            icon: Icon(Icons.close, color: Colors.black54),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ),
         body: _isLocation
             ? Center(
                 child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: Colors.black87,
+                color: Colors.black54,
               ))
             : SingleChildScrollView(
                 child: Column(
@@ -217,7 +276,13 @@ void showLocationPrompt() {
                                 textInputAction: TextInputAction.next,
                                 style: TextStyle(fontSize: 12),
                                 decoration: InputDecoration(
-                                  label: Text("Video Title"),
+                                  label: Text("Video Title",
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontFamily: 'lexend',
+                                    fontWeight: FontWeight.w400
+                                  ),
+                                  ),
                                   border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(5),
                                       borderSide:
@@ -231,7 +296,13 @@ void showLocationPrompt() {
                                 textInputAction: TextInputAction.next,
                                 style: TextStyle(fontSize: 12),
                                 decoration: InputDecoration(
-                                  label: Text("Video Description"),
+                                  label: Text("Video Description",
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontFamily: 'lexend',
+                                    fontWeight: FontWeight.w400
+                                  ),
+                                  ),
                                   border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(5),
                                       borderSide:
@@ -245,7 +316,13 @@ void showLocationPrompt() {
                                       controller: _locationController,
                                       style: TextStyle(fontSize: 12),
                                       decoration: InputDecoration(
-                                        label: Text("Video Location"),
+                                        label: Text("Video Location",
+                                        style: TextStyle(
+                                          color: Colors.black54,
+                                          fontFamily: 'lexend',
+                                          fontWeight: FontWeight.w400
+                                        ),
+                                        ),
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(5),
                                           borderSide: BorderSide(color: Colors.blue),
@@ -259,7 +336,13 @@ void showLocationPrompt() {
                                 controller: _categoryController,
                                 style: TextStyle(fontSize: 12),
                                 decoration: InputDecoration(
-                                  label: Text("Video category"),
+                                  label: Text("Video category",
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontFamily: 'lexend',
+                                    fontWeight: FontWeight.w400
+                                  ),
+                                  ),
                                   border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(5),
                                       borderSide:
@@ -280,7 +363,13 @@ void showLocationPrompt() {
                                     ],
                                   ),
                                 )
-                                    : Center(child: Text('No video selected')),
+                                    : Center(child: Text('Record a Video to post',
+                                    style: TextStyle(
+                                    color: Colors.black54,
+                                    fontFamily: 'lexend',
+                                    fontWeight: FontWeight.w400
+                                  ),
+                                    )),
                               ),
                               SizedBox(
                                 height: 26,
@@ -294,62 +383,64 @@ void showLocationPrompt() {
                                   child: ElevatedButton(
                                       onPressed: () async {
                                         if (_titleController.text.isEmpty) {
-                              // ... (showSnackBar for title)
-                            } else if (_descController.text.isEmpty) {
-                              // ... (showSnackBar for description)
-                            } else if (_locationController.text.isEmpty) {
-                              // ... (showSnackBar for location)
-                            } else if (_categoryController.text.isEmpty) {
-                              // ... (showSnackBar for category)
-                            } else if (pickedFile == null) {
-                              // ... (showSnackBar for video)
-                            } else {
-                              setState(() {
-                                _isLoading = true;
-                              });
-                              final file = File(pickedFile!.path);
-                              final firebaseStorageRef =
-                                  firebase_storage.FirebaseStorage.instance
-                                      .ref()
-                                      .child('videos')
-                                      .child(
-                                          DateTime.now().microsecondsSinceEpoch
-                                              .toString() + '.mp4');
+                                          } else if (_descController.text.isEmpty) {
+                                          } else if (_locationController.text.isEmpty) {
 
-                              final uploadTask = firebaseStorageRef.putFile(file);
+                                          } else if (_categoryController.text.isEmpty) {
+                                          } else if (pickedFile == null) {
+                                          
+                                          } else {
+                                            setState(() {
+                                              _isLoading = true;
+                                            });
+                                            final file = File(pickedFile!.path);
+                                            final firebaseStorageRef =
+                                                firebase_storage.FirebaseStorage.instance
+                                                    .ref()
+                                                    .child('videos')
+                                                    .child(
+                                                        DateTime.now().microsecondsSinceEpoch
+                                                            .toString() + '.mp4');
 
-                              try {
-                                await uploadTask.whenComplete(() async {
-                                  try {
-                                    // Get the download URL
-                                    downloadURL =
-                                        await firebaseStorageRef.getDownloadURL();
-                                    await FireStoreMethods().postVideo(
-                                      title: _titleController.text.trim(),
-                                      des: _descController.text.trim(),
-                                      location: _locationController.text.trim(),
-                                      category: _categoryController.text.trim(),
-                                      url: downloadURL,
-                                    );
-                                  } catch (e) {
-                                    showSnackBar(context, 'Download URL error: $e');
-                                  } finally {
-                                    setState(() {
-                                      _isLoading = false;
-                                    });
-                                  }
-                                });
-                              } catch (e) {
-                                // Handle upload task completion error
-                                showSnackBar(context, 'Upload error: $e');
-                                setState(() {
-                                  _isLoading = false;
-                                });
-                              }
-                            }
-                          },
+                                            final uploadTask = firebaseStorageRef.putFile(file);
+
+                                            try {
+                                              await uploadTask.whenComplete(() async {
+                                                try {
+                                                  // Get the download URL
+                                                  downloadURL =
+                                                      await firebaseStorageRef.getDownloadURL();
+                                                  await FireStoreMethods().postVideo(
+                                                    title: _titleController.text.trim(),
+                                                    des: _descController.text.trim(),
+                                                    location: _locationController.text.trim(),
+                                                    category: _categoryController.text.trim(),
+                                                    url: downloadURL,
+                                                    profileImageUrl: profileImageUrl,
+                                                    userPhoneNumber: userPhoneNumber,
+                                                  );
+                                                  showSuccessSnackBar(context);
+                                                } catch (e) {
+                                                  showSnackBar(context, 'Download URL error: $e');
+                                                } finally {
+                                                  setState(() {
+                                                    _isLoading = false;
+                                                  });
+                                                }
+                                              });
+                                            } catch (e) {
+                                              // Handle upload task completion error
+                                              showSnackBar(context, 'Upload error: $e');
+                                              setState(() {
+                                                _isLoading = false;
+                                              });
+                                            }
+                                          }
+                                        },
                                       style: ElevatedButton.styleFrom(
-                                          shape: StadiumBorder()),
+                                          shape: StadiumBorder(),
+                                          primary: Colors.blue.shade800,
+                                          ),
                                       child: _isLoading
                                           ? CircularProgressIndicator(
                                               strokeWidth: 2,
@@ -359,6 +450,7 @@ void showLocationPrompt() {
                                               "Post",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
+                                                  fontFamily: 'lexend',
                                                   fontSize: 14),
                                             )),
                                 ),
