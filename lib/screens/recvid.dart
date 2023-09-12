@@ -35,7 +35,7 @@ Widget currentscreen =HomeScreen();
             style: TextStyle(
               fontSize: 20,
               color: Colors.white,
-              fontFamily: 'Courgette',
+              fontFamily: 'lexend',
             ),
           ),
           centerTitle: true,
@@ -91,6 +91,7 @@ Widget currentscreen =HomeScreen();
                           border: InputBorder.none,
                           hintText: 'Search videos...',
                           hintStyle: TextStyle(
+                            fontFamily: 'lexend',
                             fontSize: 16,
                           ),
                         ),
@@ -131,6 +132,7 @@ Widget currentscreen =HomeScreen();
                         return Center(
                           child: Text("No videos found.",
                           style: TextStyle(
+                            fontFamily: 'lexend',
                             color: Colors.white,
                           ),
                           ),

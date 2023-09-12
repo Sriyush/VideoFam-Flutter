@@ -13,6 +13,7 @@ import 'package:videofam/firebase/logout.dart';
 import 'package:videofam/screens/postvid.dart';
 import 'package:videofam/screens/recvid.dart';
 
+
 class ProfilePage extends StatefulWidget {
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -174,25 +175,17 @@ class _ProfilePageState extends State<ProfilePage> {
             color: Colors.white,
           ),
         ),
-        actions: <Widget>[
-          PopupMenuButton<int>(
-            itemBuilder: (context) => [
-              PopupMenuItem<int>(
-                value: 0,
-                child: const Text('Feedback'),
-              ),
-              PopupMenuItem<int>(
-                value: 1,
-                child: const Text('Logout'),
-              ),
-            ],
-            onSelected: (value) {
-              if (value == 1) {
+       actions: [
+            IconButton(
+              onPressed: () {
                 AuthenticationHelper.handleLogout(context);
-              }
-            },
-          ),
-        ],
+              },
+              icon: const Icon(
+                Icons.logout,
+                color: Colors.white,
+              ),
+            ),
+          ],
         iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
         backgroundColor: Colors.grey.shade900,
@@ -339,6 +332,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         'My Posts',
                         style: TextStyle(
                           fontSize: 24,
+                          fontFamily: 'lexend',
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -368,14 +362,24 @@ class _ProfilePageState extends State<ProfilePage> {
 
                         return Column(
                           children: posts.map((post) {
-                            final postTitle = post['title']; // Replace with your post field name.
-                            final postContent = post['category']; // Replace with your post field name.
+                            final postTitle = post['title'];
+                            final postContent = post['category'];
 
                             return Card(
                               margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                               child: ListTile(
-                                title: Text(postTitle),
-                                subtitle: Text(postContent),
+                                title: Text(postTitle,
+                                style: TextStyle(
+                                  fontFamily: 'lexend',
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                ),
+                                subtitle: Text(postContent,
+                                style: TextStyle(
+                                  fontFamily: 'lexend',
+                                  fontWeight: FontWeight.w300,
+                                ),
+                                ),
                                 // You can customize the display of each post here.
                               ),
                             );
@@ -429,6 +433,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 '$name',
                                 style: TextStyle(
                                   fontSize: 22,
+                                  fontFamily: 'lexend',
                                   color: Colors.white,
                                 ),
                               ),
@@ -439,6 +444,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 '$email',
                                 style: TextStyle(
                                     fontSize: 22,
+                                    fontFamily: 'lexend',
                                     color: Colors.white
                                 ),
                               ),
@@ -528,7 +534,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         return Center(
                           child: Text(
                             'No posts found',
-                            style: TextStyle(fontSize: 16),
+                            style: TextStyle(fontSize: 16,
+                            fontFamily: 'lexend',
+                            ),
                           ),
                         );
                       }
@@ -611,6 +619,36 @@ class _ProfilePageState extends State<ProfilePage> {
                       ],
                     ),
                   ),
+                  //  MaterialButton(
+                  //   minWidth: 20,
+                  //   onPressed: () {
+                  //     Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //         builder: (context) => UserSearchPage(),
+                  //       ),
+                  //     );
+                  //   },
+                  //   child: Column(
+                  //     mainAxisAlignment: MainAxisAlignment.center,
+                  //     children: [
+                  //       Icon(
+                  //         Icons.home,
+                  //         color: currenttab == 0 ? Colors.blueAccent : Colors.grey,
+                  //         size: 25,
+                  //       ),
+                  //       Text(
+                  //         'Users',
+                  //         style: TextStyle(
+                  //           fontFamily: 'lexend',
+                  //           fontSize: 11,
+                  //           fontWeight: FontWeight.w400,
+                  //           color: currenttab == 0 ? Colors.blueAccent : Colors.grey,
+                  //         ),
+                  //       )
+                  //     ],
+                  //   ),
+                  // ),
                 ],
               ),
               Row(

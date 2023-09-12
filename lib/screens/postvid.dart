@@ -227,6 +227,7 @@ void showLocationPrompt() {
           title: Text(
             "Post Video",
             style: TextStyle(
+              fontFamily: 'lexend',
               fontSize: 16,
               color: Colors.black54
             ),

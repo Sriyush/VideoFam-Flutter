@@ -1,10 +1,11 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoCards extends StatefulWidget {
   final snap;
-  const VideoCards({super.key, required this.snap});
+
+  const VideoCards({Key? key, required this.snap}) : super(key: key);
 
   @override
   State<VideoCards> createState() => _VideoCardsState();
@@ -12,27 +13,35 @@ class VideoCards extends StatefulWidget {
 
 class _VideoCardsState extends State<VideoCards> {
   late VideoPlayerController _videoController;
+  bool _isVideoInitializing = true;
+
   @override
   void initState() {
     super.initState();
-    // _initializeVideoController();
+    _initializeVideoController();
   }
 
-  // Future<void> _initializeVideoController() async {
-  //   _videoController = VideoPlayerController.network(widget.snap['videoUrl']);
-  //   await _videoController.initialize();
-  //   Future.delayed(Duration(seconds: 1), () {
-  //         setState(() {
-  //           _videoController.play();
-  //         });
-  //       }); // Mute the video
-  // }
+  Future<void> _initializeVideoController() async {
+    _videoController = VideoPlayerController.network(widget.snap['videoUrl']);
+    await _videoController.initialize();
+    setState(() {
+      _isVideoInitializing = false;
+    });
+
+    Future.delayed(Duration(seconds: 1), () {
+      if (mounted) {
+        setState(() {
+          _videoController.play();
+        });
+      }
+    });
+  }
 
   @override
-  // void dispose() {
-  //   _videoController.dispose();
-  //   super.dispose();
-  // }
+  void dispose() {
+    _videoController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,15 +62,16 @@ class _VideoCardsState extends State<VideoCards> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-               CircleAvatar(
-                    backgroundColor: widget.snap['profileImageUrl'] != null
-                        ? Colors.transparent
-                        : Colors.grey.shade100,
-                    radius: 24,
-                    backgroundImage: widget.snap['profileImageUrl'] != null
-                        ? NetworkImage(widget.snap['profileImageUrl'])
-                        : null,
-                  ),
+                CircleAvatar(
+                  backgroundColor:
+                      widget.snap['profileImageUrl'] != null
+                          ? Colors.transparent
+                          : Colors.grey.shade100,
+                  radius: 24,
+                  backgroundImage: widget.snap['profileImageUrl'] != null
+                      ? NetworkImage(widget.snap['profileImageUrl'])
+                      : null,
+                ),
                 SizedBox(
                   width: 8,
                 ),
@@ -70,6 +80,7 @@ class _VideoCardsState extends State<VideoCards> {
                     "${widget.snap['title']}",
                     style: TextStyle(
                       fontSize: 16,
+                      fontFamily: 'lexend',
                       fontWeight: FontWeight.w600,
                       color: Colors.black87,
                       overflow: TextOverflow.ellipsis,
@@ -80,25 +91,22 @@ class _VideoCardsState extends State<VideoCards> {
                 )
               ],
             ),
-            // Text(
-            //   "${widget.snap['category']}",
-            //   style: TextStyle(
-            //     fontSize: 16,
-            //     fontWeight: FontWeight.w400,
-            //     overflow: TextOverflow.ellipsis,
-            //     color: Colors.black54,
-            //     letterSpacing: 0.5,
-            //   ),
-            //   maxLines: 1,
-            // ),
             SizedBox(height: 8),
             Container(
               height: 240,
               child: Stack(
                 alignment: Alignment.bottomCenter,
                 children: [
-                  // if (_videoController.value.isInitialized)
-                  //   VideoPlayer(_videoController),
+                  if (_isVideoInitializing)
+                    Shimmer.fromColors(
+                      baseColor: Colors.grey[400]!,
+                      highlightColor: Colors.grey[300]!,
+                      child: Container(
+                        color: Colors.black,
+                      ),
+                    )
+                  else if (_videoController.value.isInitialized)
+                    VideoPlayer(_videoController),
                 ],
               ),
             ),
@@ -106,6 +114,7 @@ class _VideoCardsState extends State<VideoCards> {
             Text(
               "${widget.snap['des']}",
               style: TextStyle(
+                fontFamily: 'lexend',
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
@@ -119,6 +128,7 @@ class _VideoCardsState extends State<VideoCards> {
               "${widget.snap['location']}",
               style: TextStyle(
                 fontSize: 16,
+                fontFamily: 'lexend',
                 fontWeight: FontWeight.w500,
                 overflow: TextOverflow.ellipsis,
                 color: Colors.black54,
